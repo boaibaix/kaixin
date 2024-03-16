@@ -81,35 +81,33 @@ proxy-providers:
 
   SS: {<<: *p, path: ./proxy-providers/SS.yaml, url: xx3}
 
-
-
 proxies: null
 
 proxy-groups:
   #策略组
-  - {name: FINAL, type: select,  proxies: [HK, TW, SG, KR, JP, US, LM]}
+  - {name: 漏网之鱼, type: select,  proxies: [香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门]}
 
   #节点地区分组
-  - {name: HK, <<: *select, filter: "🇭🇰|香港|HK|Hong"}
+  - {name: 香港, <<: *select, filter: "🇭🇰|香港|HK|Hong"}
 
-  - {name: TW, <<: *select, filter: "🇨🇳|台湾|TW|Taiwan"}
+  - {name: 台湾, <<: *select, filter: "🇨🇳|台湾|TW|Taiwan"}
 
-  - {name: SG, <<: *select, filter: "🇸🇬|新加坡|狮|獅|SG|Singapore"}
+  - {name: 新加坡, <<: *select, filter: "🇸🇬|新加坡|狮|獅|SG|Singapore"}
 
-  - {name: KR, <<: *select, filter: "🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea"}
+  - {name: 韩国, <<: *select, filter: "🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea"}
 
-  - {name: JP, <<: *select, filter: "🇯🇵|日本|JP|Japan"}
+  - {name: 日本, <<: *select, filter: "🇯🇵|日本|JP|Japan"}
 
-  - {name: US, <<: *select, filter: "🇺🇸|美国|US|USA|States|American"}
+  - {name: 美国, <<: *select, filter: "🇺🇸|美国|US|USA|States|American"}
 
-  - {name: LM, <<: *select, filter: "(^(?!.*(套餐|订阅|剩余|到期|🇭🇰|香港|HK|Hong|🇨🇳|台湾|TW|Taiwan|🇸🇬|新加坡|狮|獅|SG|Sin|Singapore|🇯🇵|日本|JP|Japan|🇺🇸|美国|US|USA|States|American|🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea)).*)"}
+  - {name: 冷门, <<: *select, filter: "(^(?!.*(套餐|订阅|剩余|到期|🇭🇰|香港|HK|Hong|🇨🇳|台湾|TW|Taiwan|🇸🇬|新加坡|狮|獅|SG|Sin|Singapore|🇯🇵|日本|JP|Japan|🇺🇸|美国|US|USA|States|American|🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea)).*)"}
  
   #分流分组
-  - {name: IP, type: select,  proxies: [DIRECT,HK, TW, SG, KR, JP, US, LM]}
+  - {name: 归属地, type: select,  proxies: [DIRECT, 香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门]}
 
-  - {name: BLBL,  type: select, proxies: [DIRECT, HK, TW]}
+  - {name: B站,  type: select, proxies: [DIRECT, 香港, 台湾]}
 
-  - {name: GAME, type: select, proxies: [DIRECT, FINAL]}
+  - {name: 游戏, type: select, proxies: [DIRECT, 漏网之鱼]}
 
 rule-providers:
  # Apple
@@ -151,19 +149,19 @@ rule-providers:
  Lan: {<<: *c, format: text, path: ./rule-providers/Lan.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/Lan.list}
 
  rules:
-  - RULE-SET,Telegram,SG
-  - RULE-SET,OpenAI,US
-  - RULE-SET,Emby,US
-  - RULE-SET,Antiip,IP
-  - RULE-SET,BiliBili,BLBL
-  - RULE-SET,BiliBiliIntl,BLBL
-  - RULE-SET,Game,GAME
+  - RULE-SET,Telegram,新加坡
+  - RULE-SET,OpenAI,美国
+  - RULE-SET,Emby,美国
+  - RULE-SET,Antiip,归属地
+  - RULE-SET,BiliBili,B站
+  - RULE-SET,BiliBiliIntl,B站
+  - RULE-SET,Game,游戏
   - RULE-SET,Apple,DIRECT
-  - RULE-SET,PikPak,FINAL
-  - RULE-SET,OneDrive,FINAL
-  - RULE-SET,Microsoft,FINAL
-  - RULE-SET,Global,FINAL
+  - RULE-SET,PikPak,漏网之鱼
+  - RULE-SET,OneDrive,漏网之鱼
+  - RULE-SET,Microsoft,漏网之鱼
+  - RULE-SET,Global,漏网之鱼
   - RULE-SET,China,DIRECT
   - RULE-SET,Lan,DIRECT
   - GEOIP,CN,DIRECT
-  - MATCH,FINAL
+  - MATCH,漏网之鱼
