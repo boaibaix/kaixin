@@ -148,7 +148,7 @@ rule-providers:
  # 局域网   
  Lan: {<<: *c, format: text, path: ./rule-providers/Lan.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/Lan.list}
 
- rules:
+rules:
   - RULE-SET,Telegram,新加坡
   - RULE-SET,OpenAI,美国
   - RULE-SET,Emby,美国
