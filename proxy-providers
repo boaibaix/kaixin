@@ -85,29 +85,29 @@ proxies: null
 
 proxy-groups:
   #策略组
-  - {name: 漏网之鱼, type: select,  proxies: [香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门]}
+  - {name: 漏网之鱼, type: select,  proxies: [香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/World_Map.png}
 
   #节点地区分组
-  - {name: 香港, <<: *select, filter: "🇭🇰|香港|HK|Hong"}
+  - {name: 香港, <<: *select, filter: "🇭🇰|香港|HK|Hong", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/HK.png}
 
-  - {name: 台湾, <<: *select, filter: "🇨🇳|台湾|TW|Taiwan"}
+  - {name: 台湾, <<: *select, filter: "🇨🇳|台湾|TW|Taiwan", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TW.png}
 
-  - {name: 新加坡, <<: *select, filter: "🇸🇬|新加坡|狮|獅|SG|Singapore"}
+  - {name: 新加坡, <<: *select, filter: "🇸🇬|新加坡|狮|獅|SG|Singapore", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/SG.png}
 
-  - {name: 韩国, <<: *select, filter: "🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea"}
+  - {name: 韩国, <<: *select, filter: "🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/KR.png}
 
-  - {name: 日本, <<: *select, filter: "🇯🇵|日本|JP|Japan"}
+  - {name: 日本, <<: *select, filter: "🇯🇵|日本|JP|Japan", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/JP.png}
 
-  - {name: 美国, <<: *select, filter: "🇺🇸|美国|US|USA|States|American"}
+  - {name: 美国, <<: *select, filter: "🇺🇸|美国|US|USA|States|American", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/US.png}
 
-  - {name: 冷门, <<: *select, filter: "(^(?!.*(套餐|订阅|剩余|到期|🇭🇰|香港|HK|Hong|🇨🇳|台湾|TW|Taiwan|🇸🇬|新加坡|狮|獅|SG|Sin|Singapore|🇯🇵|日本|JP|Japan|🇺🇸|美国|US|USA|States|American|🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea)).*)"}
+  - {name: 冷门, <<: *select, filter: "(^(?!.*(套餐|订阅|剩余|到期|🇭🇰|香港|HK|Hong|🇨🇳|台湾|TW|Taiwan|🇸🇬|新加坡|狮|獅|SG|Sin|Singapore|🇯🇵|日本|JP|Japan|🇺🇸|美国|US|USA|States|American|🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea)).*)", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Europe_Map.png}
  
   #分流分组
-  - {name: 归属地, type: select,  proxies: [DIRECT, 香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门]}
+  - {name: 归属地, type: select,  proxies: [DIRECT, 香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China_Map.png}
 
-  - {name: B站,  type: select, proxies: [DIRECT, 香港, 台湾]}
+  - {name: B站,  type: select, proxies: [DIRECT, 香港, 台湾], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png}
 
-  - {name: 游戏, type: select, proxies: [DIRECT, 漏网之鱼]}
+  - {name: 游戏, type: select, proxies: [DIRECT, 漏网之鱼], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png}
 
 rule-providers:
  # Apple
