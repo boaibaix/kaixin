@@ -61,7 +61,7 @@ dns:
 p: &p {type: http, interval: 86400, health-check: {enable: true, url: http://cp.cloudflare.com/generate_204, interval: 1800}}
 
 # 手动选择策略组：手动选择想要的节点/策略组
-select: &select {type: select, use: [MESL, ESNC]}
+select: &select {type: select, use: [机场1, 机场2]}
 
 # classical规则相关
 c: &c {type: http, behavior: classical, interval: 86400}
@@ -75,9 +75,9 @@ i: &i {type: http, behavior: ipcidr, interval: 86400}
 ###结束
 
 proxy-providers:
-  MESL: {<<: *p, path: ./proxy-providers/MESL.yaml, url: xx1}
+  机场1: {<<: *p, path: ./proxy-providers/机场1.yaml, url: xx1}
 
-  ESNC: {<<: *p, path: ./proxy-providers/ESNC.yaml, url: xx2}
+  机场2: {<<: *p, path: ./proxy-providers/机场2.yaml, url: xx2}
 
 proxies: null
 
