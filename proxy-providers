@@ -1,165 +1,141 @@
-mixed-port: 7890      # 混合端口 HTTP和SOCKS5用一个端口
-geodata-mode: true    #【Meta专属】使用geoip.dat数据库(默认：false使用mmdb数据库)
-tcp-concurrent: false #【Meta专属】TCP 并发连接所有 IP, 将使用最快握手的 TCP
-allow-lan: true       # 允许局域网的连接（可用来共享代理）
-bind-address: "*"     # 仅在将allow-lan设置为true时适用
-                      # #"*": 绑定所有IP地址
-find-process-mode: strict           #匹配所有进程（always/strict/off）
-ipv6: false           # 开启 IPv6 总开关，关闭阻断所有 IPv6 链接和屏蔽 DNS 请求 AAAA 记录
-mode: rule            # 规则模式：rule（规则） / global（全局代理）/ direct（全局直连）/ script (脚本)
-log-level: info       # 设置日志输出级别 (5 个级别：silent / error / warning / info / debug）
-external-controller: 0.0.0.0:9093   #外部控制器,可以使用 RESTful API 来控制你的 clash 内核
-global-client-fingerprint: chrome   #全局 TLS 指纹，优先低于 proxy 内的 client-fingerprint
-                                    #可选： "chrome","firefox","safari","ios","random","none" options.
+port: 7890
+socks-port: 7891
+mixed-port: 7892
+redir-port: 7893
+tproxy-port: 7894
 
-# geox-url:             #自定义 geodata url
-  # mmdb: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country-lite.mmdb"
-  # geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
-  # geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite-lite.dat"
+unified-delay: true
+geodata-mode: false
+geodata-loader: standard
+geo-auto-update: true
+geo-update-interval: 24
+tcp-concurrent: true
+find-process-mode: strict
+global-client-fingerprint: chrome
 
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: true
+udp: true
+
+external-controller: 0.0.0.0:9097
+external-controller-cors:
+  allow-private-network: true
+  allow-origins:
+  - tauri://localhost
+  - http://tauri.localhost
+  - http://yacd.metacubex.one
+  - http://metacubex.github.io
+  - http://board.zash.run.place
+  - https://yacd.metacubex.one
+  - https://metacubex.github.io
+  - https://board.zash.run.place
+
+geox-url:
+  # geoip: 'https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geoip.dat'
+  # geosite: 'https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat'
+  mmdb: 'https://geodata.kelee.one/Country-Masaiki.mmdb'
+  asn: 'https://geodata.kelee.one/GeoLite2-ASN-P3TERX.mmdb'
 
 profile:
-  store-selected: true # 存储 select 选择记录
-  store-fake-ip: true  # 持久化 fake-ip
-  
-sniffer:               # 嗅探域名 可选配置
+  store-selected: true
+  store-fake-ip: true
+
+sniffer:
   enable: true
-  parse-pure-ip: true  # 是否使用嗅探结果作为实际访问，默认 true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
   sniff:
-    TLS:               # TLS 默认嗅探 443
-      ports: [443, 8443]
     HTTP:
       ports: [80, 8080-8880]
       override-destination: true
+    TLS:
+      ports: [443, 8443]
     QUIC:
       ports: [443, 8443]
-      
-tun:                   # Tun 配置
-  enable: flase
-  stack: system        # 可选： system/gvisor/mixed；tun 模式堆栈,如无使用问题,建议使用 system 栈;MacOS 用户推荐 gvisor栈
-                       # system 使用系统协议栈,可以提供更稳定/全面的 tun 体验,且占用相对其他堆栈更低。 
-                       # gvisor 通过在用户空间中实现网络协议栈,可以提供更高的安全性和隔离性,同时可以避免操作系统内核和用户空间之间的切换,从而在特定情况下具有更好的网络处理性能
-                       # mixed 混合堆栈,tcp使用 system栈,udp使用 gvisor栈,使用体验可能相对更好
-  dns-hijack: [any:53]            # dns劫持,一般设置为 any:53 即可, 即劫持所有53端口的udp流量
-# strict_route: true   # 将所有连接路由到tun来防止泄漏，但你的设备将无法其他设备被访问
-  auto-route: true     # 自动设置全局路由，可以自动将全局流量路由进入tun网卡。
-  auto-detect-interface: true     # 自动识别出口网卡
-        
+  force-domain:
+    - +.v2ex.com
+
+  skip-domain:
+    - Mijia Cloud
+
+tun:
+  enable: false
+  stack: system
+  dns-hijack:
+    - any:53
+  auto-route: true
+  auto-detect-interface: true
+
 dns:
-  enable: true             # 关闭将使用系统 DNS
-  ipv6: false              # IPV6解析开关；如果为false，将返回ipv6结果为空
-  enhanced-mode: fake-ip   # 模式：redir-host或fake-ip
-  listen: 0.0.0.0:53       # DNS监听地址
-  fake-ip-range: 198.18.0.1/16    # Fake-IP解析地址池
-  fake-ip-filter: ['*.lan', 'cable.auth.com', '*.msftconnecttest.com', '*.msftncsi.com', 'network-test.debian.org', 'detectportal.firefox.com', 'resolver1.opendns.com', '*.srv.nintendo.net', '*.stun.playstation.net', 'xbox.*.microsoft.com', '*.xboxlive.com', 'stun.*', 'global.turn.twilio.com', 'global.stun.twilio.com', 'localhost.*.qq.com', 'localhost.*.weixin.qq.com', '*.logon.battlenet.com.cn', '*.logon.battle.net', '*.blzstatic.cn', 'music.163.com', '*.music.163.com', '*.126.net', 'musicapi.taihe.com', 'music.taihe.com', 'songsearch.kugou.com', 'trackercdn.kugou.com', '*.kuwo.cn', 'api-jooxtt.sanook.com', 'api.joox.com', 'joox.com', 'y.qq.com', '*.y.qq.com', 'streamoc.music.tc.qq.com', 'mobileoc.music.tc.qq.com', 'isure.stream.qqmusic.qq.com', 'dl.stream.qqmusic.qq.com', 'aqqmusic.tc.qq.com', 'amobile.music.tc.qq.com', '*.xiami.com', '*.music.migu.cn', 'music.migu.cn', 'proxy.golang.org', '*.mcdn.bilivideo.cn', '*.cmpassport.com', 'id6.me', 'open.e.189.cn', 'mdn.open.wo.cn', 'opencloud.wostore.cn', 'auth.wosms.cn', '*.jegotrip.com.cn', '*.icitymobile.mobi', '*.pingan.com.cn', '*.cmbchina.com', 'pool.ntp.org', '*.pool.ntp.org', 'ntp.*.com', 'time.*.com', 'ntp?.*.com', 'time?.*.com', 'time.*.gov', 'time.*.edu.cn', '*.ntp.org.cn', 'PDC._msDCS.*.*', 'DC._msDCS.*.*', 'GC._msDCS.*.*']
-                          # fake ip 白名单列表'以下地址不会下发fakeip映射用于连接
-  nameserver: [https://doh.pub/dns-query, https://dns.alidns.com/dns-query]               
-      
-###建立锚点
-    
-# 订阅更新和延迟测试相关参数
-p: &p {type: http, interval: 86400, health-check: {enable: true, url: http://cp.cloudflare.com/generate_204, interval: 1800}}
+  enable: true
+  prefer-h3: true
+  listen: 0.0.0.0:1053
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  fake-ip-filter:
+    - "*"
+    - +.lan
+  default-nameserver:
+    - 8.8.8.8
+    - 114.114.114.114
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - https://223.5.5.5/dns-query
+    - https://223.6.6.6/dns-query
 
-# 手动选择策略组：手动选择想要的节点/策略组
-select: &select {type: select, use: [机场1, 机场2]}
-
-# classical规则相关
-c: &c {type: http, behavior: classical, interval: 86400}
-
-# domain规则相关
-d: &d {type: http, behavior: domain, interval: 86400}
-
-# ipcidr规则相关
-i: &i {type: http, behavior: ipcidr, interval: 86400}
-
-###结束
-
+p: &p {type: http, interval: 86400, health-check: {enable: true, url: https://cp.cloudflare.com/generate_204, interval: 1800}}
 proxy-providers:
-  机场1: {<<: *p, path: ./proxy-providers/机场1.yaml, url: xx1}
+  xxxxxx: {<<: *p, path: ./proxy-providers/xxxxxx.yaml, url: xxxxxx}
 
-  机场2: {<<: *p, path: ./proxy-providers/机场2.yaml, url: xx2}
-
-proxies: null
+pg: &pg {type: select, use: [xxxxxx]} 
+select: &select {type: select, include-all: true}
+c: &c {type: http, behavior: classical, format: text, interval: 86400}
 
 proxy-groups:
   #策略组
-  - {name: 漏网之鱼, type: select,  proxies: [香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/World_Map.png}
-
-  #节点地区分组
-  - {name: 香港, <<: *select, filter: "🇭🇰|香港|HK|Hong", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/HK.png}
-
-  - {name: 台湾, <<: *select, filter: "🇨🇳|台湾|TW|Taiwan", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TW.png}
-
-  - {name: 新加坡, <<: *select, filter: "🇸🇬|新加坡|狮|獅|SG|Singapore", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/SG.png}
-
-  - {name: 韩国, <<: *select, filter: "🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/KR.png}
-
-  - {name: 日本, <<: *select, filter: "🇯🇵|日本|JP|Japan", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/JP.png}
-
-  - {name: 美国, <<: *select, filter: "🇺🇸|美国|US|USA|States|American", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/US.png}
-
-  - {name: 冷门, <<: *select, filter: "(^(?!.*(套餐|订阅|剩余|到期|🇭🇰|香港|HK|Hong|🇨🇳|台湾|TW|Taiwan|🇸🇬|新加坡|狮|獅|SG|Sin|Singapore|🇯🇵|日本|JP|Japan|🇺🇸|美国|US|USA|States|American|🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea)).*)", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Europe_Map.png}
- 
-  #分流分组
+  - {name: Telegram, type: select,  proxies: [香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png}
+  - {name: TikTok, type: select,  proxies: [香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png}
+  - {name: AI, type: select,  proxies: [香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png}
   - {name: 归属地, type: select,  proxies: [DIRECT, 香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China_Map.png}
-
   - {name: B站,  type: select, proxies: [DIRECT, 香港, 台湾], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png}
-
   - {name: 游戏, type: select, proxies: [DIRECT, 漏网之鱼], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png}
+  - {name: 漏网之鱼, type: select,  proxies: [香港, 台湾, 新加坡, 韩国, 日本, 美国, 冷门], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/World_Map.png}
+  #节点地区分组
+  - {name: 香港, <<: *pg, filter: "🇭🇰|香港|HK|Hong", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/HK.png}
+  - {name: 台湾, <<: *pg, filter: "🇨🇳|台湾|台灣|TW|Taiwan", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TW.png}
+  - {name: 新加坡, <<: *pg, filter: "🇸🇬|新加坡|狮|獅|SG|Singapore", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/SG.png}
+  - {name: 韩国, <<: *pg, filter: "🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/KR.png}
+  - {name: 日本, <<: *pg, filter: "🇯🇵|日本|JP|Japan", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/JP.png}
+  - {name: 美国, <<: *pg, filter: "🇺🇸|美国|US|USA|States|American", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/US.png}
+  - {name: 冷门, <<: *pg, filter: "(^(?!.*(官网|套餐|订阅|剩余|到期|🇭🇰|香港|HK|Hong|🇨🇳|台湾|台灣|TW|Taiwan|🇸🇬|新加坡|狮|獅|SG|Sin|Singapore|🇯🇵|日本|JP|Japan|🇺🇸|美国|US|USA|States|American|🇰🇵|朝|KP|🇰🇷|韩国|韓|KR|Korea)).*)", icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Europe_Map.png}
 
 rule-providers:
- # Apple
- Apple: {<<: *c, format: text, path: ./rule-providers/Apple.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple.list}
-
- # Telegram
- Telegram: {<<: *c, format: text, path: ./rule-providers/Telegram.list,  url: https://raw.githubusercontent.com/LucaLin233/Luca_Conf/main/Surge/Rule/Telegram.list}
-
- # OpenAI
- OpenAI: {<<: *c, format: text, path: ./rule-providers/OpenAI.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.list}
-
- # EMBY
- Emby: {<<: *c, format: text, path: ./rule-providers/Emby.list,  url: https://raw.githubusercontent.com/boaibaix/kaixin/main/Emby.list}
-
- # 归属地
- Antiip: {<<: *c, format: text, path: ./rule-providers/Antiip.list,  url: https://raw.githubusercontent.com/boaibaix/kaixin/main/Antiip.list}
-
- # Bilibili
- BiliBili: {<<: *c, format: text, path: ./rule-providers/BiliBili.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.list}
- BiliBiliIntl: {<<: *c, format: text, path: ./rule-providers/BiliBiliIntl.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBiliIntl/BiliBiliIntl.list}
-
- # Game
- Game: {<<: *c, format: text, path: ./rule-providers/Game.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/Game.list}
-
- # Microsoft 
- OneDrive: {<<: *c, format: text, path: ./rule-providers/OneDrive.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/OneDrive.list}
- Microsoft: {<<: *c, format: text, path: ./rule-providers/Microsoft.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.list}
-
- # PikPak
- PikPak: {<<: *c, format: text, path: ./rule-providers/PikPak.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/PikPak/PikPak.list}
-
- # Global
- Global: {<<: *c, format: text, path: ./rule-providers/Global.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Global/Global.list}
-
- # China
- China: {<<: *c, format: text, path: ./rule-providers/China.list,  url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/China/China.list}
-
- # 局域网   
- Lan: {<<: *c, format: text, path: ./rule-providers/Lan.list,  url: https://github.com/Repcz/Tool/raw/X/Clash/Rules/Lan.list}
-
+ Telegram: {<<: *c, url: https://raw.githubusercontent.com/Repcz/Tool/refs/heads/X/mihomo/Rules/Telegram.list}
+ TikTok: {<<: *c, url: https://github.com/Repcz/Tool/raw/X/mihomo/Rules/TikTok.list}
+ Apple: {<<: *c, url: https://raw.githubusercontent.com/Repcz/Tool/refs/heads/X/mihomo/Rules/Apple.list}
+ AI: {<<: *c, url: https://raw.githubusercontent.com/Repcz/Tool/refs/heads/X/mihomo/Rules/AI.list}
+ Antiip: {<<: *c, url: https://raw.githubusercontent.com/boaibaix/kaixin/main/Antiip.list}
+ BiliBili: {<<: *c, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.list}
+ BiliBiliIntl: {<<: *c, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBiliIntl/BiliBiliIntl.list}
+ Game: {<<: *c, url: https://raw.githubusercontent.com/Repcz/Tool/refs/heads/X/mihomo/Rules/Game.list}
+ Microsoft: {<<: *c, url: https://raw.githubusercontent.com/Repcz/Tool/refs/heads/X/mihomo/Rules/Microsoft.list}
+ Reject: {<<: *c, url: https://github.com/Repcz/Tool/raw/X/mihomo/Rules/Reject.list}
+  
 rules:
-  - RULE-SET,Telegram,新加坡
-  - RULE-SET,OpenAI,美国
-  - RULE-SET,Emby,美国
+  - RULE-SET,Telegram,Telegram
+  - RULE-SET,Telegram,TikTok
+  - RULE-SET,AI,AI
   - RULE-SET,Antiip,归属地
   - RULE-SET,BiliBili,B站
   - RULE-SET,BiliBiliIntl,B站
   - RULE-SET,Game,游戏
-  - RULE-SET,Apple,DIRECT
-  - RULE-SET,PikPak,漏网之鱼
-  - RULE-SET,OneDrive,漏网之鱼
   - RULE-SET,Microsoft,漏网之鱼
-  - RULE-SET,Global,漏网之鱼
-  - RULE-SET,China,DIRECT
-  - RULE-SET,Lan,DIRECT
+  - RULE-SET,Apple,DIRECT  
+  - RULE-SET,Reject,REJECT
   - GEOIP,CN,DIRECT
   - MATCH,漏网之鱼
